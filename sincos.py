@@ -1,4 +1,5 @@
 import turtle
+from collections import deque
 
 RADIUS = 100
 ANGULAR_SPEED = 2
@@ -10,11 +11,11 @@ RED = (242/255, 114/255, 124/255)
 class MovingData:
     def __init__(self, x):
         self.x = x
-        self.y = [None for _ in x]
+        self.y = deque(None for _ in x)
         
     def add(self, item):
-        self.y[1:] = self.y[:-1]
-        self.y[0] = item
+        self.y.pop()
+        self.y.appendleft(item)
         
     def items(self):
         for x,y in zip(self.x, self.y):
@@ -46,6 +47,7 @@ class Trace(turtle.Turtle):
 
 def init_turtle_screen():
     window = turtle.Screen()
+    window.setup(1000, 1000)
     window.tracer(0)
     window.bgcolor(50/255, 50/255, 50/255)
     return window
