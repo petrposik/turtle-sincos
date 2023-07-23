@@ -27,11 +27,28 @@ if __name__ == "__main__":
     window = init_turtle_screen()
     main_dot = create_dot(BLUE, (0, -RADIUS))
     main_dot.pendown()
+    
     vertical_dot = create_dot(YELLOW, (main_dot.xcor() + 2*RADIUS, main_dot.ycor()))
+    vertical_plot = vertical_dot.clone()
+    vertical_plot.hideturtle()
+    start_x = int(vertical_dot.xcor())
+    x_range = range(start_x, window.window_width() // 2 + 1)
+    vertical_values = [None for _ in x_range]
+    vertical_values[0] = vertical_plot.ycor()
+    
     horizontal_dot = create_dot(RED, (main_dot.xcor(), main_dot.ycor() - RADIUS))
+    
+    
     while True:
         main_dot.circle(RADIUS, ANGULAR_SPEED)
         vertical_dot.sety(main_dot.ycor())
+        vertical_plot.clear()
+        vertical_values[1:] = vertical_values[:-1]
+        vertical_values[0] = vertical_dot.ycor()
+        for x,y in zip(x_range, vertical_values):
+            if y is None: continue
+            vertical_plot.setposition(x, y)
+            vertical_plot.dot(5)
         horizontal_dot.setx(main_dot.xcor())
         window.update()
 
