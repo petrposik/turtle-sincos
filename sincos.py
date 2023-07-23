@@ -1,12 +1,16 @@
 import turtle
 from collections import deque
+import time
 
 RADIUS = 100
-ANGULAR_SPEED = 2
+ANGULAR_SPEED = 5
 DOT_SIZE = 5
 BLUE = (0, 160/255, 193/255)
 YELLOW = (248/255, 237/255, 49/255)
 RED = (242/255, 114/255, 124/255)
+
+FPS = 12
+TIME_PER_FRAME = 1 / FPS
 
 class MovingData:
     def __init__(self, x):
@@ -21,7 +25,6 @@ class MovingData:
         for x,y in zip(self.x, self.y):
             if y is not None:
                 yield x,y
-        
 
 class Trace(turtle.Turtle):
     def __init__(self, color, x_values):
@@ -47,7 +50,7 @@ class Trace(turtle.Turtle):
 
 def init_turtle_screen():
     window = turtle.Screen()
-    window.setup(1000, 1000)
+    window.setup(800, 800)
     window.tracer(0)
     window.bgcolor(50/255, 50/255, 50/255)
     return window
@@ -80,6 +83,7 @@ if __name__ == "__main__":
     horizontal_plot.add(horizontal_dot.xcor())
     
     while True:
+        frame_start = time.time()
         main_dot.circle(RADIUS, ANGULAR_SPEED)
         
         vertical_dot.sety(main_dot.ycor())
@@ -90,6 +94,7 @@ if __name__ == "__main__":
         horizontal_plot.add(horizontal_dot.xcor())
         horizontal_plot.draw(transf=lambda x, y: (y, x))
         
+        time.sleep(max(0, TIME_PER_FRAME - (time.time() - frame_start)))
         window.update()
 
     turtle.done()
