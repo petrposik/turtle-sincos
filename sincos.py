@@ -1,11 +1,26 @@
 import turtle
 
 RADIUS = 100
-ANGULAR_SPEED = 1
+ANGULAR_SPEED = 2
 DOT_SIZE = 5
 BLUE = (0, 160/255, 193/255)
 YELLOW = (248/255, 237/255, 49/255)
 RED = (242/255, 114/255, 124/255)
+
+class MovingData:
+    def __init__(self, x):
+        self.x = x
+        self.y = [None for _ in x]
+        
+    def add(self, item):
+        self.y[1:] = self.y[:-1]
+        self.y[0] = item
+        
+    def items(self):
+        for x,y in zip(self.x, self.y):
+            if y is not None:
+                yield x,y
+        
 
 def init_turtle_screen():
     window = turtle.Screen()
@@ -32,9 +47,8 @@ if __name__ == "__main__":
     vertical_plot = vertical_dot.clone()
     vertical_plot.hideturtle()
     start_x = int(vertical_dot.xcor())
-    x_range = range(start_x, window.window_width() // 2 + 1)
-    vertical_values = [None for _ in x_range]
-    vertical_values[0] = vertical_plot.ycor()
+    vertical_values = MovingData(range(start_x, window.window_width() // 2 + 1))
+    vertical_values.add(vertical_plot.ycor())
     
     horizontal_dot = create_dot(RED, (main_dot.xcor(), main_dot.ycor() - RADIUS))
     
@@ -43,10 +57,8 @@ if __name__ == "__main__":
         main_dot.circle(RADIUS, ANGULAR_SPEED)
         vertical_dot.sety(main_dot.ycor())
         vertical_plot.clear()
-        vertical_values[1:] = vertical_values[:-1]
-        vertical_values[0] = vertical_dot.ycor()
-        for x,y in zip(x_range, vertical_values):
-            if y is None: continue
+        vertical_values.add(vertical_dot.ycor())
+        for x,y in vertical_values.items():
             vertical_plot.setposition(x, y)
             vertical_plot.dot(5)
         horizontal_dot.setx(main_dot.xcor())
