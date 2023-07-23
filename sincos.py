@@ -2,28 +2,34 @@ import turtle
 
 RADIUS = 100
 ANGULAR_SPEED = 1
+DOT_SIZE = 5
+BLUE = (0, 160/255, 193/255)
+YELLOW = (248/255, 237/255, 49/255)
 
-window = turtle.Screen()
-window.tracer(0)
-window.bgcolor(50/255, 50/255, 50/255)
+def init_turtle_screen():
+    window = turtle.Screen()
+    window.tracer(0)
+    window.bgcolor(50/255, 50/255, 50/255)
+    return window
 
-main_dot = turtle.Turtle()
-main_dot.pensize(5)
-main_dot.shape("circle")
-main_dot.color(0, 160/255, 193/255)
-main_dot.penup()
-main_dot.setposition(0, -RADIUS)
-main_dot.pendown()
+def create_dot(color, position, size=DOT_SIZE):
+    dot = turtle.Turtle()
+    dot.pensize(size)
+    dot.shape("circle")
+    dot.color(*color)
+    dot.penup()
+    dot.setposition(*position)
+    return dot
 
-vertical_dot = turtle.Turtle()
-vertical_dot.shape("circle")
-vertical_dot.color(248/255, 237/255, 49/255)
-vertical_dot.penup()
-vertical_dot.setposition(main_dot.xcor() + 2*RADIUS, main_dot.ycor())
 
-while True:
-    main_dot.circle(RADIUS, ANGULAR_SPEED)
-    vertical_dot.sety(main_dot.ycor())
-    window.update()
+if __name__ == "__main__":
+    window = init_turtle_screen()
+    main_dot = create_dot(BLUE, (0, -RADIUS))
+    main_dot.pendown()
+    vertical_dot = create_dot(YELLOW, (main_dot.xcor() + 2*RADIUS, main_dot.ycor()))
+    while True:
+        main_dot.circle(RADIUS, ANGULAR_SPEED)
+        vertical_dot.sety(main_dot.ycor())
+        window.update()
 
-turtle.done()
+    turtle.done()
