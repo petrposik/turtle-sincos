@@ -22,6 +22,28 @@ class MovingData:
                 yield x,y
         
 
+class Trace(turtle.Turtle):
+    def __init__(self, color, x_values):
+        super().__init__()
+        self.color(*color)
+        self.pensize(5)
+        self.hideturtle()
+        self.data = MovingData(x_values)
+        
+    def add(self, item):
+        self.data.add(item)
+    
+    def draw(self, transf=None):
+        transf = transf or (lambda x, y: (x, y))
+        self.clear()
+        self.penup()
+        self.goto(transf(self.data.x[0], self.data.y[0]))
+        self.pendown()
+        for x, y in self.data.items():
+            self.goto(transf(x, y))
+            self.dot(5)
+
+
 def init_turtle_screen():
     window = turtle.Screen()
     window.tracer(0)
@@ -42,26 +64,30 @@ if __name__ == "__main__":
     window = init_turtle_screen()
     main_dot = create_dot(BLUE, (0, -RADIUS))
     main_dot.pendown()
+    main_dot.circle(RADIUS)
+    main_dot.penup()
     
     vertical_dot = create_dot(YELLOW, (main_dot.xcor() + 2*RADIUS, main_dot.ycor()))
-    vertical_plot = vertical_dot.clone()
-    vertical_plot.hideturtle()
     start_x = int(vertical_dot.xcor())
-    vertical_values = MovingData(range(start_x, window.window_width() // 2 + 1))
-    vertical_values.add(vertical_plot.ycor())
+    vertical_plot = Trace(YELLOW, range(start_x, window.window_width() // 2 + 1))
+    vertical_plot.add(vertical_dot.ycor())
     
     horizontal_dot = create_dot(RED, (main_dot.xcor(), main_dot.ycor() - RADIUS))
-    
+    start_y = int(horizontal_dot.ycor())
+    horizontal_plot = Trace(RED, range(start_y, -window.window_height() // 2 - 1, -1))
+    horizontal_plot.add(horizontal_dot.xcor())
     
     while True:
         main_dot.circle(RADIUS, ANGULAR_SPEED)
+        
         vertical_dot.sety(main_dot.ycor())
-        vertical_plot.clear()
-        vertical_values.add(vertical_dot.ycor())
-        for x,y in vertical_values.items():
-            vertical_plot.setposition(x, y)
-            vertical_plot.dot(5)
+        vertical_plot.add(vertical_dot.ycor())
+        vertical_plot.draw()
+        
         horizontal_dot.setx(main_dot.xcor())
+        horizontal_plot.add(horizontal_dot.xcor())
+        horizontal_plot.draw(transf=lambda x, y: (y, x))
+        
         window.update()
 
     turtle.done()
